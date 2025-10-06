@@ -5,4 +5,9 @@ const createUser = async (mail, password) => {
     return results;
 };
 
-module.exports = { createUser };
+const findByCredentials = async (mail, password) => {
+    const [rows] = await connection.execute('SELECT * FROM utilisateur WHERE mail = ? and mdp = ?',[mail, password]);
+    return rows;
+};
+
+module.exports = { createUser, findByCredentials };
