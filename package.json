@@ -1,7 +1,6 @@
 {
   "name": "fieldtrack",
   "version": "1.0.0",
-  "type": "module",
   "description": "",
   "homepage": "https://github.com/FlamySpeeddraw/FieldTrack#readme",
   "bugs": {
@@ -24,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.1",
     "node-cron": "^4.2.1",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "sequelize": "^6.37.7"
   }
 }
