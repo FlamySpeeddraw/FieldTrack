@@ -1,37 +1,34 @@
 const Intervention = require("../model/intervention.model");
 
-const getInterventions = async (req, res, next) => {
-    try {
-        const result = await Intervention.getInterventions();
-        if (!result || result.length === 0)
-            return res.status(404).json({ code: "NOT_FOUND", message: "Aucune intervention trouvée" });
-
-        res.status(200).json(result);
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ code: "INTERNAL_ERROR", message: "Une erreur interne est survenue" });
-    }
+const getInterventions = async (req, res) => {
+    let interventions = await Intervention.findAll();
+    res.status(200).json(interventions);
 };
+
+const getInterventionById = async (req, res) => {
+    let interventions = await Intervention.findByPk(req.params.id); 
+    res.status(200).json(interventions);
+}
 
 const postIntervention = async (req, res) => {
-  try {
-    const { date_intervention, id_utilisateur, status, description, commentaire, photo, adresse } = req.body;
+    let newIntervention = await Intervention.create({
+      date_intervention: req.body.date_intervention,
+      id_utilisateur: req.body.id_utilisateur,
+      status: req.body.status,
+      description: req.body.description,
+      commentaire: req.body.commentaire,
+      photo: req.body.photo,
+      adresse: req.body.adresse,
+    });
 
-    await Intervention.postIntervention(
-      date_intervention,
-      id_utilisateur,
-      status,
-      description,
-      commentaire,
-      photo,
-      adresse
-    );
-
-    res.status(201).json({ message: "Intervention ajoutée avec succès" });
-  } catch (error) {
-    console.error("Erreur lors de l'ajout de l'intervention:", error);
-    res.status(500).json({ message: "Erreur serveur" });
-  }
+    res.status(201).json({ message: "Intervention ajoutée", data: newIntervention });
 };
 
-module.exports = { getInterventions, postIntervention };
+const updateIntervention = async (req, res) => {
+  const result = await Intervention.update(req.body, {
+    where: { id_intervention: req.params.id },
+  });
+  res.status(200).json(result);
+};
+
+module.exports = { getInterventions, postIntervention, updateIntervention, getInterventionById };
