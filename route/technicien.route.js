@@ -1,7 +1,6 @@
-// route/technicien.route.js
 const express = require("express");
 const router = express.Router();
-const technicienController = require("../controller/technicien.controller");
+const technicienController = require("./../controller/technicien.controller");
 
 // CRUD Technicien
 router.post("/", technicienController.createTechnicien);
