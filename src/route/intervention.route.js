@@ -10,5 +10,4 @@ router.post('/', InterventionController.postIntervention);
 
 router.put("/:id", InterventionController.updateIntervention);
 
-
 module.exports = router;
