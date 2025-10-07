@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-const exempleRouter = require('./route/exemple.route');
+const exempleRouter = require('./src/route/exemple.route');
 
 app.use("/exemple", exempleRouter);
 
