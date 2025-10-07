@@ -1,5 +1,5 @@
-import cron from 'node-cron';
-import { archiveOldInterventions } from './archive.js';
+const cron = require('node-cron');
+const { archiveOldInterventions } = require('./archive');
 
 cron.schedule('* * * * *', () => {
     console.log('Début de l’archivage...');
