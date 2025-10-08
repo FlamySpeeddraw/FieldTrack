@@ -6,7 +6,7 @@ const getAllUtilisateurs = async (req, res, next) => {
     try {
         const utilisateurs = await User.findAll({
             include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
-            attributes: ['id_utilisateur', 'mail', 'mdp']
+            attributes: ['id', 'mail', 'mdp']
         });
 
         if (!utilisateurs || utilisateurs.length === 0) {
@@ -14,7 +14,7 @@ const getAllUtilisateurs = async (req, res, next) => {
         }
 
         const mapped = utilisateurs.map(u => ({
-            id_utilisateur: u.id_utilisateur,
+            id: u.id,
             mail: u.mail,
             mdp: u.mdp,
             nom_role: u.role ? u.role.nom_role : null
@@ -28,7 +28,7 @@ const getUtilisateurById = async (req, res, next) => {
     try {
         const utilisateur = await User.findByPk(req.params.id, {
             include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
-            attributes: ['id_utilisateur', 'mail', 'mdp']
+            attributes: ['id', 'mail', 'mdp']
         });
 
         if (!utilisateur) return res.status(404).json({ message: "Utilisateur introuvable" });
@@ -46,7 +46,9 @@ const createUtilisateur = async (req, res, next) => {
         const roleInstance = await Role.findOne({ where: { nom_role: role } });
         if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
 
-        const newUtilisateur = await User.create({ mail, mdp, role_id: roleInstance.id_role });
+        console.log(roleInstance);
+
+        const newUtilisateur = await User.create({ mail, mdp, role_id: roleInstance.id });
         res.status(201).json({ message: "Utilisateur créé", data: newUtilisateur });
     } catch (e) { next(e); }
 };
