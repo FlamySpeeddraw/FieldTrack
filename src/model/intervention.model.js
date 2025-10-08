@@ -4,8 +4,6 @@ module.exports = (sequelize) => {
     const Intervention = sequelize.define("Intervention", {
         id_intervention: {
             type: DataTypes.INTEGER, 
-            allowNull: false, 
-            unique: true,
             autoIncrement: true,
             primaryKey:true
         },
@@ -16,6 +14,12 @@ module.exports = (sequelize) => {
         id_utilisateur: {
             type: DataTypes.INTEGER, 
             allowNull: true, 
+            references: {
+                model: "utilisateur", 
+                key: "id_utilisateur"
+            },
+            onUpdate: "CASCADE",
+            onDelete: "SET NULL"
         }, 
         status: {
             type: DataTypes.STRING(50),
@@ -38,6 +42,12 @@ module.exports = (sequelize) => {
             allowNull: true
         }
     })
+
+    Intervention.associate = (models) => {
+        Intervention.belongsTo(models.User, 
+            {foreignKey: "id_utilisateur"})
+    }
+
     return Intervention;
 }
 
