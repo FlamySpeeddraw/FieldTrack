@@ -13,47 +13,6 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   logging: false,
 });
 
-const Role = sequelize.define("Role", {
-  id_role: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  nom_role: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-}, {
-  tableName: "role",
-  timestamps: false,
-});
-
-const Utilisateur = sequelize.define("Utilisateur", {
-  id_utilisateur: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  mail: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  mdp: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  role_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Role,
-      key: "id_role",
-    },
-  },
-}, {
-  tableName: "utilisateur",
-  timestamps: false,
-});
 
 Utilisateur.belongsTo(Role, { foreignKey: "role_id", as: "role" });
 Role.hasMany(Utilisateur, { foreignKey: "role_id", as: "utilisateurs" });
