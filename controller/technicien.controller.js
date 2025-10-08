@@ -1,11 +1,10 @@
-// controller/technicien.controller.js
 const technicienModel = require("../model/technicien.model");
 
+// 🔹 CREATE
 exports.createTechnicien = async (req, res) => {
   try {
     const { mail, mdp } = req.body;
 
-    // Validation simple
     if (!mail || !mdp) {
       return res.status(400).json({
         success: false,
@@ -19,7 +18,6 @@ exports.createTechnicien = async (req, res) => {
       message: "Technicien créé avec succès.",
       data: result
     });
-
   } catch (error) {
     console.error("Erreur création technicien :", error);
     return res.status(500).json({
@@ -30,6 +28,7 @@ exports.createTechnicien = async (req, res) => {
   }
 };
 
+// 🔹 READ ALL
 exports.getAllTechniciens = async (req, res) => {
   try {
     const techniciens = await technicienModel.getAll();
@@ -48,6 +47,7 @@ exports.getAllTechniciens = async (req, res) => {
   }
 };
 
+// 🔹 READ ONE
 exports.getTechnicienById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -82,6 +82,7 @@ exports.getTechnicienById = async (req, res) => {
   }
 };
 
+// 🔹 UPDATE
 exports.updateTechnicien = async (req, res) => {
   try {
     const id = req.params.id;
@@ -123,6 +124,7 @@ exports.updateTechnicien = async (req, res) => {
   }
 };
 
+// 🔹 DELETE
 exports.deleteTechnicien = async (req, res) => {
   try {
     const id = req.params.id;

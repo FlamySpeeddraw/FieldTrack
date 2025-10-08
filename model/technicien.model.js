@@ -1,6 +1,4 @@
-// model/technicien.model.js
-const { Utilisateur, Role } = require("../index"); // index.js exporte les modèles Sequelize
-const { Op } = require("sequelize");
+const { Utilisateur, Role } = require("../index");
 
 // 🔹 Obtenir l'id du rôle 'technicien'
 async function getRoleId() {
@@ -12,12 +10,7 @@ async function getRoleId() {
 // 🔹 CREATE
 exports.create = async (mail, mdp) => {
   const role_id = await getRoleId();
-  const utilisateur = await Utilisateur.create({
-    mail,
-    mdp,
-    role_id,
-  });
-
+  const utilisateur = await Utilisateur.create({ mail, mdp, role_id });
   return {
     id_utilisateur: utilisateur.id_utilisateur,
     mail: utilisateur.mail,
