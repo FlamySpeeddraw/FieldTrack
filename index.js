@@ -9,8 +9,10 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 const authRouter = require('./src/route/auth.route');
+const userRouter = require("./route/utilisateur.route");
 
 app.use("/auth", authRouter);
+app.use("/utilisateur", userRouter);
 
 app.listen(port, () => {
     console.log("[API] : Ouverture du serveur...");
