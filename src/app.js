@@ -17,7 +17,22 @@ app.use("/interventions", interventionsRouter);
 app.use("/auth", authRouter);
 app.use("/utilisateur", userRouter);
 
+// Requires en haut du fichier (ajoute-les avec les autres require)
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
+
+// ... plus bas, après le montage des routes
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: { title: 'FieldTrack API', version: '1.0.0' },
+  },
+  apis: ['./src/route/*.js', './src/controller/*.js'] // chemins vers fichiers commentés en JSDoc
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use(logMiddleware);
-app.use(express.json());
 
 module.exports = app;
