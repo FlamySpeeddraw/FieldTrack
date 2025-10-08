@@ -1,15 +1,16 @@
 const express = require("express");
 require("dotenv").config();
 var cors = require('cors');
+const sequelize = require('./src/config/connexion');
 
 const port = process.env.PORT;
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-const exempleRouter = require('./src/route/exemple.route');
+const authRouter = require('./src/route/auth.route');
 
-app.use("/exemple", exempleRouter);
+app.use("/auth", authRouter);
 
 app.listen(port, () => {
     console.log("[API] : Ouverture du serveur...");
