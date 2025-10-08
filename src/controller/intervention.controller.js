@@ -7,6 +7,9 @@ const User = db.User;
 const getInterventions = async (req, res, next) => {
   try {
     const interventions = await Intervention.findAll();
+
+    if (!interventions || interventions.length === 0) {return res.status(404).json({ message: "Aucune intervention prévue. PS: faire gaffe à ne pas perdre trop d'argent." });}
+
     res.status(200).json({ data: interventions });
   } catch (e) { next(e); }
 };
