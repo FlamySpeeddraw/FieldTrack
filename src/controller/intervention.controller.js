@@ -46,7 +46,7 @@ const getInterventionByUserId = async (req, res, next) => {
   }
 };
 
-
+// créer une intervention, à l'avenir ne devra être possible que pour un gestionnaire 
 const postIntervention = async (req, res, next) => {
   try {
     const utilisateur = await User.findByPk(req.body.id_utilisateur);
