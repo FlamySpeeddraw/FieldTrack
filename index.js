@@ -69,8 +69,8 @@ module.exports = { sequelize, Utilisateur, Role };
   }
 })();
 
-const technicienRouter = require("./route/technicien.route");
-app.use("/technicien", technicienRouter);
+const userRouter = require("./route/utilisateur.route");
+app.use("/utilisateur", userRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
