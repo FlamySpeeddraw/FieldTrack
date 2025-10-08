@@ -1,5 +1,7 @@
 const db = require("../config/connection");
 const Intervention = db.Intervention;
+const User = db.User;
+
 
 // Avoir toute les interventions, sans critère spécifique 
 const getInterventions = async (req, res, next) => {
@@ -19,9 +21,15 @@ const getInterventionById = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
-// Créer une intervention
+// Créer une intervention, vérifie avant si l'utilisateur 
 const postIntervention = async (req, res, next) => {
   try {
+    const utilisateur = await User.findByPk(req.body.id_utilisateur);
+
+    if (!utilisateur) {
+      return res.status(404).json({ message: "Utilisateur non existant" });
+    }
+
     const newIntervention = await Intervention.create({
       date_intervention: req.body.date_intervention,
       id_utilisateur: req.body.id_utilisateur,
