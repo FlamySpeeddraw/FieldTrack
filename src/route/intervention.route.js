@@ -6,6 +6,8 @@ router.get("/",  InterventionController.getInterventions);
 
 router.get("/:id", InterventionController.getInterventionById);
 
+router.get("/user/:id", InterventionController.getInterventionByUserId);
+
 router.post("/", InterventionController.postIntervention);
 
 router.put("/:id", InterventionController.updateIntervention);

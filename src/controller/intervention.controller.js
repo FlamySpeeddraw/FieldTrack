@@ -21,7 +21,26 @@ const getInterventionById = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
-// Créer une intervention, vérifie avant si l'utilisateur 
+// Avoir les interventions en fonction d'un certain id utilisateur
+const getInterventionByUserId = async (req, res, next) => {
+  try {
+    const userId = req.params.id; 
+    const interventions = await Intervention.findAll({
+      where: { id_utilisateur: userId }
+    });
+
+    if (!interventions || interventions.length === 0) {
+      return res.status(404).json({ message: "Aucune intervention trouvée pour cette personne. Bonnes vacances!✌️ " });
+    }
+
+    res.status(200).json({ data: interventions });
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
+
 const postIntervention = async (req, res, next) => {
   try {
     const utilisateur = await User.findByPk(req.body.id_utilisateur);
@@ -79,4 +98,4 @@ const deleteIntervention = async (req, res, next) => {
   }
 };
 
-module.exports = { getInterventions, getInterventionById, postIntervention, updateIntervention, deleteIntervention};
+module.exports = { getInterventions, getInterventionById, getInterventionByUserId, postIntervention, updateIntervention, deleteIntervention};
