@@ -43,10 +43,7 @@ const getInterventionByUserId = async (req, res, next) => {
     }
 
     res.status(200).json({ data: interventions });
-  } catch (e) {
-    console.error(e);
-    next(e);
-  }
+  } catch (e) { next(e);}
 };
 
 // créer une intervention, à l'avenir ne devra être possible que pour un gestionnaire 
@@ -85,9 +82,7 @@ const updateIntervention = async (req, res, next) => {
     });
     
     res.status(200).json({ updated });
-  } catch (e) { 
-    next(e); 
-  }
+  } catch (e) { next(e); }
 };
 
 // Supprimer une intervention en fonction de l'id (non, on ne va pas supprimer toute les interventions d'un coup parce qu'on est pas des bourrins 👍)
@@ -102,9 +97,7 @@ const deleteIntervention = async (req, res, next) => {
     } else {
       res.status(404).json({ message: "Intervention non trouvée" });
     }
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 };
 
 module.exports = { getInterventions, getInterventionById, getInterventionByUserId, postIntervention, updateIntervention, deleteIntervention};
