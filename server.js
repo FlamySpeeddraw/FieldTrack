@@ -1,6 +1,7 @@
 const http = require('http');
 const app = require('./src/app');
+require("dotenv").config();
 
 const server = http.createServer(app);
 
-server.listen(3600);
+server.listen(process.env.PORT);
