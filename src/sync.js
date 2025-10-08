@@ -5,7 +5,7 @@ const sync = async () => {
         await db.sequelize.sync({ alter: true });
         console.log(" Base de données synchronisée.");
     } catch (error) {
-        console.log(" Échec de la synchronisation :", err);
+        console.log(" Échec de la synchronisation :", error);
     }
 }
 

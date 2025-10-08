@@ -75,7 +75,7 @@ const updateIntervention = async (req, res, next) => {
         });
 
         const [updated] = await Intervention.update(updateData, {
-            where: { id_intervention: req.params.id }
+            where: { id: req.params.id }
         });
 
         res.status(200).json({ updated });
@@ -85,7 +85,7 @@ const updateIntervention = async (req, res, next) => {
 const deleteIntervention = async (req, res, next) => {
     try {
         const deleted = await Intervention.destroy({
-            where: { id_intervention: req.params.id }
+            where: { id: req.params.id }
         });
 
         if (deleted) {
