@@ -12,3 +12,5 @@ const verifyToken = (req, res, next) => {
         return res.status(401).json({ code: "INVALID_TOKEN", message: "Le token est manquant ou mauvais" });
     }
 }
+
+module.exports = { verifyToken };

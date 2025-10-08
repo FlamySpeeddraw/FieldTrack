@@ -1,93 +1,85 @@
 const db = require("../config/connexion");
-const UtilisateurEntry = db.Utilisateur || db.User || db['Utilisateur'] || db['utilisateur'] || db['user'];
-const RoleEntry = db.Role || db['Role'] || db['role'];
+const User = db.User;
+const Role = db.Role;
 
-const Utilisateur = UtilisateurEntry && UtilisateurEntry.model ? UtilisateurEntry.model : UtilisateurEntry;
-const Role = RoleEntry && RoleEntry.model ? RoleEntry.model : RoleEntry;
-
-// Avoir tous les utilisateurs
 const getAllUtilisateurs = async (req, res, next) => {
-  try {
-    const utilisateurs = await Utilisateur.findAll({
-      include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
-      attributes: ['id_utilisateur', 'mail', 'mdp']
-    });
+    try {
+        const utilisateurs = await User.findAll({
+            include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
+            attributes: ['id_utilisateur', 'mail', 'mdp']
+        });
 
-    if (!utilisateurs || utilisateurs.length === 0) {
-      return res.status(404).json({ message: "Aucun utilisateur trouvé." });
-    }
+        if (!utilisateurs || utilisateurs.length === 0) {
+            return res.status(404).json({ message: "Aucun utilisateur trouvé." });
+        }
 
-    const mapped = utilisateurs.map(u => ({
-      id_utilisateur: u.id_utilisateur,
-      mail: u.mail,
-      mdp: u.mdp,
-      nom_role: u.role ? u.role.nom_role : null
-    }));
+        const mapped = utilisateurs.map(u => ({
+            id_utilisateur: u.id_utilisateur,
+            mail: u.mail,
+            mdp: u.mdp,
+            nom_role: u.role ? u.role.nom_role : null
+        }));
 
-    res.status(200).json({ data: mapped });
-  } catch (e) { next(e); }
+        res.status(200).json({ data: mapped });
+    } catch (e) { next(e); }
 };
 
-// Avoir un utilisateur par id
 const getUtilisateurById = async (req, res, next) => {
-  try {
-    const utilisateur = await Utilisateur.findByPk(req.params.id, {
-      include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
-      attributes: ['id_utilisateur', 'mail', 'mdp']
-    });
+    try {
+        const utilisateur = await User.findByPk(req.params.id, {
+            include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
+            attributes: ['id_utilisateur', 'mail', 'mdp']
+        });
 
-    if (!utilisateur) return res.status(404).json({ message: "Utilisateur introuvable" });
+        if (!utilisateur) return res.status(404).json({ message: "Utilisateur introuvable" });
 
-    res.status(200).json({ data: utilisateur });
-  } catch (e) { next(e); }
+        res.status(200).json({ data: utilisateur });
+    } catch (e) { next(e); }
 };
 
-// Créer un utilisateur
 const createUtilisateur = async (req, res, next) => {
-  try {
-    const { mail, mdp, role } = req.body;
+    try {
+        const { mail, mdp, role } = req.body;
 
-    if (!mail || !mdp || !role) return res.status(400).json({ message: "Les champs 'mail', 'mdp' et 'role' sont obligatoires." });
+        if (!mail || !mdp || !role) return res.status(400).json({ message: "Les champs 'mail', 'mdp' et 'role' sont obligatoires." });
 
-    const roleInstance = await Role.findOne({ where: { nom_role: role } });
-    if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
+        const roleInstance = await Role.findOne({ where: { nom_role: role } });
+        if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
 
-    const newUtilisateur = await Utilisateur.create({ mail, mdp, role_id: roleInstance.id_role });
-    res.status(201).json({ message: "Utilisateur créé", data: newUtilisateur });
-  } catch (e) { next(e); }
+        const newUtilisateur = await User.create({ mail, mdp, role_id: roleInstance.id_role });
+        res.status(201).json({ message: "Utilisateur créé", data: newUtilisateur });
+    } catch (e) { next(e); }
 };
 
-// Mettre à jour un utilisateur
 const updateUtilisateur = async (req, res, next) => {
-  try {
-    const allowedFields = ['mail', 'mdp', 'role'];
-    const updateData = {};
-    allowedFields.forEach(field => {
-      if (req.body[field] !== undefined) updateData[field] = req.body[field];
-    });
+    try {
+        const allowedFields = ['mail', 'mdp', 'role'];
+        const updateData = {};
+        allowedFields.forEach(field => {
+            if (req.body[field] !== undefined) updateData[field] = req.body[field];
+        });
 
-    if (updateData.role) {
-      const roleInstance = await Role.findOne({ where: { nom_role: updateData.role } });
-      if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
-      updateData.role_id = roleInstance.id_role;
-      delete updateData.role;
-    }
+        if (updateData.role) {
+            const roleInstance = await Role.findOne({ where: { nom_role: updateData.role } });
+            if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
+            updateData.role_id = roleInstance.id_role;
+            delete updateData.role;
+        }
 
-    const [updated] = await Utilisateur.update(updateData, { where: { id_utilisateur: req.params.id } });
-    res.status(200).json({ updated });
-  } catch (e) { next(e); }
+        const [updated] = await User.update(updateData, { where: { id_utilisateur: req.params.id } });
+        res.status(200).json({ updated });
+    } catch (e) { next(e); }
 };
 
-// Supprimer un utilisateur
 const deleteUtilisateur = async (req, res, next) => {
-  try {
-    const deleted = await Utilisateur.destroy({ where: { id_utilisateur: req.params.id } });
-    if (deleted) {
-      res.status(200).json({ message: "Utilisateur supprimé" });
-    } else {
-      res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
-  } catch (e) { next(e); }
+    try {
+        const deleted = await User.destroy({ where: { id_utilisateur: req.params.id } });
+        if (deleted) {
+            res.status(200).json({ message: "Utilisateur supprimé" });
+        } else {
+            res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+    } catch (e) { next(e); }
 };
 
 module.exports = { getAllUtilisateurs, getUtilisateurById, createUtilisateur, updateUtilisateur, deleteUtilisateur };

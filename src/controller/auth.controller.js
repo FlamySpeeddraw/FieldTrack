@@ -7,18 +7,18 @@ const jwt = require('jsonwebtoken');
 
 const login = async (req, res, next) => {
     try {
-        const { password: rawPassword, email } = req.body;
-        if (!rawPassword || !email) {
-            return res.status(400).json({ code: 'BAD_REQUEST', message: 'Email et mot de passe requis' });
+        const { mdp: rawPassword, mail } = req.body;
+        if (!rawPassword || !mail) {
+            return res.status(400).json({ code: 'BAD_REQUEST', message: 'Mail et mot de passe requis' });
         }
 
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({ where: { mail } });
         if (!user) {
-            return res.status(403).json({ message: 'Email ou mot de passe incorrect' });
+            return res.status(403).json({ message: 'mail ou mot de passe incorrect' });
         }
 
-        if (!bcryptjs.compareSync(rawPassword, user.password)) {
-            return res.status(403).json({ message: 'Email ou mot de passe incorrect' });
+        if (!bcryptjs.compareSync(rawPassword, user.mdp)) {
+            return res.status(403).json({ message: 'mail ou mot de passe incorrect' });
         }
 
         const newRefreshToken = generateRefreshToken();
@@ -44,19 +44,20 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
     try {
-        const { password: rawPassword, email } = req.body;
-        if (!rawPassword || !email) {
-            return res.status(400).json({ code: 'BAD_REQUEST', message: 'Email et mot de passe requis' });
+        const { mdp: rawPassword, mail } = req.body;
+        if (!rawPassword || !mail) {
+            return res.status(400).json({ code: 'BAD_REQUEST', message: 'Mail et mot de passe requis' });
         }
 
         const hashedPassword = bcryptjs.hashSync(rawPassword, 10);
         const newUser = await User.create({
-            email,
-            password: hashedPassword
+            mail,
+            mdp: hashedPassword
         });
 
         res.status(201).json({ message: 'Utilisateur créé' });
     } catch (e) {
+        console.log(e)
         res.status(500).json({ message: 'Erreur interne' });
     }
 }

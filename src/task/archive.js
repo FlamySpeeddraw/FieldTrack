@@ -12,7 +12,7 @@ const dbConfig = {
     database: process.env.DB_NAME,
 };
 
-function logMessage(message) {
+const logMessage = (message) => {
     const timestamp = new Date().toISOString();
     const log = `[${timestamp}] ${message}\n`;
     console.log(log);
@@ -27,7 +27,7 @@ function logMessage(message) {
     fs.appendFileSync(logPath, log);
 }
 
-export async function archiveOldInterventions() {
+const archiveOldInterventions = async () => {
     let connection;
 
     try {
@@ -61,3 +61,5 @@ export async function archiveOldInterventions() {
         }
     }
 }
+
+module.exports = { archiveOldInterventions };
