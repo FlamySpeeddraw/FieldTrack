@@ -2,12 +2,17 @@ module.exports = (sequelize) => {
     const {DataTypes} = require('sequelize');
 
     const User = sequelize.define("User",{
-        email: {
+        id_utilisateur: { 
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+         },
+        mail: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
         },
-        password: {
+        mdp: {
             type: DataTypes.STRING,
             allowNull: false
         }},
@@ -16,8 +21,12 @@ module.exports = (sequelize) => {
     })
 
     User.associate = (models) => {
-        User.belongsTo(models.Role, {foreignKey: "role"})
-    }
+        User.belongsTo(models.Role, {foreignKey: "role_id"});
+        User.hasMany(models.Intervention, {
+      foreignKey: "id_utilisateur",
+      as: "interventions"
+    });
+}
 
     return User;
 }
