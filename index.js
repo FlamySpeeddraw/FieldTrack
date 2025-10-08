@@ -1,11 +1,13 @@
 const express = require("express");
 require("dotenv").config();
-const cors = require("cors");
-const { Sequelize, DataTypes } = require("sequelize");
+var cors = require('cors');
+const sequelize = require('./src/config/connexion');
 
+const port = process.env.PORT;
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
+
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
@@ -27,16 +29,24 @@ module.exports = { sequelize };
 const uutilisateurRouter = require("./src/route/utilisateur.route");
 app.use("/utilisateur", uutilisateurRouter);
 
-const port = process.env.PORT || 3000;
+const authRouter = require('./src/route/auth.route');
+const userRouter = require("./route/utilisateur.route");
+
+app.use("/auth", authRouter);
+app.use("/utilisateur", userRouter);
+
+
 app.listen(port, () => {
-  console.log(`[API] Serveur démarré sur le port ${port}.`);
+    console.log("[API] : Ouverture du serveur...");
+    console.log(`[API] : Serveur démarré sur le port ${port}.`);
 });
 
-const onClose = async () => {
-  console.log("[API] Fermeture du serveur...");
-  await sequelize.close();
-  process.exit(0);
-};
+const onClose = () => {
+    console.log("[API] : Fermeture du serveur...");
+    client.close();
+}
 
-process.on("SIGINT", onClose);
-process.on("SIGTERM", onClose);
+process.on('SIGINT', onClose);
+process.on('SIGTERM', onClose);
+
+module.exports = app;
