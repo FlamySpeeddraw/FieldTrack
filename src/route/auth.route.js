@@ -5,6 +5,6 @@ const { verifyTokenPassword } = require('../middleware/token.middleware');
 
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
-router.post('/reset-password', verifyTokenPassword, AuthController.resetPassword)
+router.post('/refresh', AuthController.refresh);
 
 module.exports = router;
