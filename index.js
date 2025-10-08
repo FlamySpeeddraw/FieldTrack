@@ -7,9 +7,9 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-const exempleRouter = require('./src/route/exemple.route');
 
-app.use("/exemple", exempleRouter);
+const interventionsRouter = require("./src/route/intervention.route");
+app.use("/interventions", interventionsRouter);
 
 app.listen(port, () => {
     console.log("[API] : Ouverture du serveur...");
