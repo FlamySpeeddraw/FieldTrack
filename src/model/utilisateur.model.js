@@ -1,4 +1,11 @@
-const { Utilisateur, Role } = require("../index");
+const { Sequelize, DataTypes } = require("sequelize");
+
+
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: "mysql",
+  logging: false,
+});
 
 const Role = sequelize.define("Role", {
   id_role: {
@@ -14,6 +21,7 @@ const Role = sequelize.define("Role", {
   tableName: "role",
   timestamps: false,
 });
+
 
 const Utilisateur = sequelize.define("Utilisateur", {
   id_utilisateur: {
@@ -42,6 +50,8 @@ const Utilisateur = sequelize.define("Utilisateur", {
   timestamps: false,
 });
 
+Utilisateur.belongsTo(Role, { foreignKey: "role_id", as: "role" });
+Role.hasMany(Utilisateur, { foreignKey: "role_id", as: "utilisateurs" });
 
 // GET ID
 async function getRoleId(roleName) {

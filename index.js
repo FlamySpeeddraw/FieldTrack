@@ -13,11 +13,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   logging: false,
 });
 
-
-Utilisateur.belongsTo(Role, { foreignKey: "role_id", as: "role" });
-Role.hasMany(Utilisateur, { foreignKey: "role_id", as: "utilisateurs" });
-
-module.exports = { sequelize, Utilisateur, Role };
+module.exports = { sequelize };
 
 (async () => {
   try {
@@ -28,8 +24,8 @@ module.exports = { sequelize, Utilisateur, Role };
   }
 })();
 
-const userRouter = require("./route/utilisateur.route");
-app.use("/utilisateur", userRouter);
+const uutilisateurRouter = require("./src/route/utilisateur.route");
+app.use("/utilisateur", uutilisateurRouter);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
