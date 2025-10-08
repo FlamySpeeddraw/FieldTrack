@@ -68,14 +68,14 @@ const updateUtilisateur = async (req, res, next) => {
             delete updateData.role;
         }
 
-        const [updated] = await User.update(updateData, { where: { id_utilisateur: req.params.id } });
+        const [updated] = await User.update(updateData, { where: { id: req.params.id } });
         res.status(200).json({ updated });
     } catch (e) { next(e); }
 };
 
 const deleteUtilisateur = async (req, res, next) => {
     try {
-        const deleted = await User.destroy({ where: { id_utilisateur: req.params.id } });
+        const deleted = await User.destroy({ where: { id: req.params.id } });
         if (deleted) {
             res.status(200).json({ message: "Utilisateur supprimé" });
         } else {
