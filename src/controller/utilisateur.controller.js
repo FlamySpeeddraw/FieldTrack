@@ -1,159 +1,93 @@
-const utilisateurModel = require("../model/utilisateur.model");
+const db = require("../config/connexion");
+const UtilisateurEntry = db.Utilisateur || db.User || db['Utilisateur'] || db['utilisateur'] || db['user'];
+const RoleEntry = db.Role || db['Role'] || db['role'];
 
-// CREATE
-exports.createUtilisateur = async (req, res) => {
+const Utilisateur = UtilisateurEntry && UtilisateurEntry.model ? UtilisateurEntry.model : UtilisateurEntry;
+const Role = RoleEntry && RoleEntry.model ? RoleEntry.model : RoleEntry;
+
+// Avoir tous les utilisateurs
+const getAllUtilisateurs = async (req, res, next) => {
+  try {
+    const utilisateurs = await Utilisateur.findAll({
+      include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
+      attributes: ['id_utilisateur', 'mail', 'mdp']
+    });
+
+    if (!utilisateurs || utilisateurs.length === 0) {
+      return res.status(404).json({ message: "Aucun utilisateur trouvé." });
+    }
+
+    const mapped = utilisateurs.map(u => ({
+      id_utilisateur: u.id_utilisateur,
+      mail: u.mail,
+      mdp: u.mdp,
+      nom_role: u.role ? u.role.nom_role : null
+    }));
+
+    res.status(200).json({ data: mapped });
+  } catch (e) { next(e); }
+};
+
+// Avoir un utilisateur par id
+const getUtilisateurById = async (req, res, next) => {
+  try {
+    const utilisateur = await Utilisateur.findByPk(req.params.id, {
+      include: [{ model: Role, as: 'role', attributes: ['nom_role'] }],
+      attributes: ['id_utilisateur', 'mail', 'mdp']
+    });
+
+    if (!utilisateur) return res.status(404).json({ message: "Utilisateur introuvable" });
+
+    res.status(200).json({ data: utilisateur });
+  } catch (e) { next(e); }
+};
+
+// Créer un utilisateur
+const createUtilisateur = async (req, res, next) => {
   try {
     const { mail, mdp, role } = req.body;
 
-    if (!mail || !mdp || !role) {
-      return res.status(400).json({
-        success: false,
-        message: "Les champs 'mail', 'mdp' et 'role' sont obligatoires."
-      });
-    }
+    if (!mail || !mdp || !role) return res.status(400).json({ message: "Les champs 'mail', 'mdp' et 'role' sont obligatoires." });
 
-    const result = await utilisateurModel.create(mail, mdp, role);
-    return res.status(201).json({
-      success: true,
-      message: `Utilisateur avec rôle '${role}' créé avec succès.`,
-      data: result
-    });
-  } catch (error) {
-    console.error("Erreur création utilisateur :", error);
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur lors de la création de l'utilisateur.",
-      error: error.message
-    });
-  }
+    const roleInstance = await Role.findOne({ where: { nom_role: role } });
+    if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
+
+    const newUtilisateur = await Utilisateur.create({ mail, mdp, role_id: roleInstance.id_role });
+    res.status(201).json({ message: "Utilisateur créé", data: newUtilisateur });
+  } catch (e) { next(e); }
 };
 
-// READ ALL
-exports.getAllUtilisateurs = async (req, res) => {
+// Mettre à jour un utilisateur
+const updateUtilisateur = async (req, res, next) => {
   try {
-    const utilisateurs = await utilisateurModel.getAll();
-    return res.status(200).json({
-      success: true,
-      message: "Liste des utilisateurs récupérée avec succès.",
-      data: utilisateurs
+    const allowedFields = ['mail', 'mdp', 'role'];
+    const updateData = {};
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) updateData[field] = req.body[field];
     });
-  } catch (error) {
-    console.error("Erreur lecture utilisateurs :", error);
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur lors de la récupération des utilisateurs.",
-      error: error.message
-    });
-  }
+
+    if (updateData.role) {
+      const roleInstance = await Role.findOne({ where: { nom_role: updateData.role } });
+      if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
+      updateData.role_id = roleInstance.id_role;
+      delete updateData.role;
+    }
+
+    const [updated] = await Utilisateur.update(updateData, { where: { id_utilisateur: req.params.id } });
+    res.status(200).json({ updated });
+  } catch (e) { next(e); }
 };
 
-// READ ONE
-exports.getUtilisateurById = async (req, res) => {
+// Supprimer un utilisateur
+const deleteUtilisateur = async (req, res, next) => {
   try {
-    const id = req.params.id;
-
-    if (isNaN(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "L'ID de l'utilisateur doit être un nombre valide."
-      });
+    const deleted = await Utilisateur.destroy({ where: { id_utilisateur: req.params.id } });
+    if (deleted) {
+      res.status(200).json({ message: "Utilisateur supprimé" });
+    } else {
+      res.status(404).json({ message: "Utilisateur non trouvé" });
     }
-
-    const utilisateur = await utilisateurModel.getById(id);
-    if (!utilisateur) {
-      return res.status(404).json({
-        success: false,
-        message: "Utilisateur non trouvé."
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Utilisateur trouvé.",
-      data: utilisateur
-    });
-  } catch (error) {
-    console.error("Erreur lecture utilisateur :", error);
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur lors de la récupération de l'utilisateur.",
-      error: error.message
-    });
-  }
+  } catch (e) { next(e); }
 };
 
-// UPDATE
-exports.updateUtilisateur = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { mail, mdp, role } = req.body;
-
-    if (isNaN(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "L'ID de l'utilisateur doit être un nombre valide."
-      });
-    }
-
-    if (!mail || !mdp) {
-      return res.status(400).json({
-        success: false,
-        message: "Les champs 'mail' et 'mdp' sont obligatoires pour la mise à jour."
-      });
-    }
-
-    const updated = await utilisateurModel.update(id, mail, mdp, role);
-    if (!updated) {
-      return res.status(404).json({
-        success: false,
-        message: "Utilisateur non trouvé."
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Utilisateur mis à jour avec succès."
-    });
-  } catch (error) {
-    console.error("Erreur mise à jour utilisateur :", error);
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur lors de la mise à jour de l'utilisateur.",
-      error: error.message
-    });
-  }
-};
-
-// DELETE
-exports.deleteUtilisateur = async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    if (isNaN(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "L'ID de l'utilisateur doit être un nombre valide."
-      });
-    }
-
-    const deleted = await utilisateurModel.remove(id);
-    if (!deleted) {
-      return res.status(404).json({
-        success: false,
-        message: "Utilisateur non trouvé."
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Utilisateur supprimé avec succès."
-    });
-  } catch (error) {
-    console.error("Erreur suppression utilisateur :", error);
-    return res.status(500).json({
-      success: false,
-      message: "Erreur serveur lors de la suppression de l'utilisateur.",
-      error: error.message
-    });
-  }
-};
+module.exports = { getAllUtilisateurs, getUtilisateurById, createUtilisateur, updateUtilisateur, deleteUtilisateur };

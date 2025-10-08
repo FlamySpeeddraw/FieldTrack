@@ -8,13 +8,6 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-  host: process.env.DB_HOST,
-  dialect: "mysql",
-  logging: false,
-});
-
 module.exports = { sequelize };
 
 (async () => {
@@ -30,7 +23,7 @@ const uutilisateurRouter = require("./src/route/utilisateur.route");
 app.use("/utilisateur", uutilisateurRouter);
 
 const authRouter = require('./src/route/auth.route');
-const userRouter = require("./route/utilisateur.route");
+const userRouter = require("./src/route/utilisateur.route");
 
 app.use("/auth", authRouter);
 app.use("/utilisateur", userRouter);
