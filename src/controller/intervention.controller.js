@@ -54,4 +54,21 @@ const updateIntervention = async (req, res, next) => {
   }
 };
 
-module.exports = { getInterventions, getInterventionById, postIntervention, updateIntervention};
+// Supprimer une intervention en fonction de l'id (non, on ne va pas supprimer toute les interventions d'un coup parce qu'on est pas des bourrins 👍)
+const deleteIntervention = async (req, res, next) => {
+  try {
+    const deleted = await Intervention.destroy({
+      where: { id_intervention: req.params.id }
+    });
+
+    if (deleted) {
+      res.status(200).json({ message: "Intervention supprimée" });
+    } else {
+      res.status(404).json({ message: "Intervention non trouvée" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { getInterventions, getInterventionById, postIntervention, updateIntervention, deleteIntervention};
