@@ -3,9 +3,7 @@ const router = express.Router();
 const InterventionController = require("../controller/intervention.controller");
 
 router.get("/",  InterventionController.getInterventions);
-
 router.get("/:id", InterventionController.getInterventionById);
-
 router.get("/user/:id", InterventionController.getInterventionByUserId);
 
 router.post("/", InterventionController.postIntervention);

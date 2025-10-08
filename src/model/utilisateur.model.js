@@ -1,12 +1,7 @@
 module.exports = (sequelize) => {
-    const {DataTypes} = require('sequelize');
+    const { DataTypes } = require('sequelize');
 
-    const User = sequelize.define("Utilisateur",{
-        id_utilisateur: { 
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true
-         },
+    const User = sequelize.define("User", {
         mail: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -15,12 +10,14 @@ module.exports = (sequelize) => {
         mdp: {
             type: DataTypes.STRING,
             allowNull: false
-        }},
+        }
+    },
         {
-        tableName: 'utilisateur',
-    })
+            tableName: 'utilisateur',
+        })
 
     User.associate = (models) => {
+        User.hasMany(models.Intervention, { foreignKey: "id_utilisateur", as: "interventions" });
         User.belongsTo(models.Role, { foreignKey: "role_id", as: 'role' });
     }
 

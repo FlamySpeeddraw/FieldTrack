@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
-export const logMiddleware = (req, res, next) => {
+const logMiddleware = (req, res, next) => {
     const start = Date.now();
 
     res.on('finish', () => {
@@ -22,3 +22,5 @@ export const logMiddleware = (req, res, next) => {
 
     next();
 };
+
+module.exports = { logMiddleware };
