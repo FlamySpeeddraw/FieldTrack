@@ -25,6 +25,12 @@ const getInterventionById = async (req, res, next) => {
 const getInterventionByUserId = async (req, res, next) => {
   try {
     const userId = req.params.id; 
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Cette personne n'existe pas" });
+    }
+
     const interventions = await Intervention.findAll({
       where: { id_utilisateur: userId }
     });
