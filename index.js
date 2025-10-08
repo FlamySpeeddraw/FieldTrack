@@ -8,9 +8,12 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
+
+const interventionsRouter = require("./src/route/intervention.route");
 const authRouter = require('./src/route/auth.route');
 const userRouter = require("./route/utilisateur.route");
 
+app.use("/interventions", interventionsRouter);
 app.use("/auth", authRouter);
 app.use("/utilisateur", userRouter);
 
