@@ -32,32 +32,32 @@ const archiveOldInterventions = async () => {
 
     try {
         connection = await mysql.createConnection(dbConfig);
-        logMessage('Connexion à la base réussie');
+        logMessage('Archive : Connexion à la base réussie');
 
         const insertQuery = `
-      INSERT INTO HistoriqueIntervention (id_intervention, id_historique, commentaire)
-      SELECT id_intervention, commentaire, NOW()
-      FROM Intervention
+      INSERT INTO HistoriqueIntervention (id_intervention, id_historique, commentaire, createdAt, updatedAt)
+      SELECT id, commentaire, NOW(), createdAt, updatedAt
+      FROM Interventions
       WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [insertResult] = await connection.execute(insertQuery);
-        logMessage(`${insertResult.affectedRows} intervention(s) archivées`);
+        logMessage(`Archive : ${insertResult.affectedRows} intervention(s) archivées`);
 
         const deleteQuery = `
-      DELETE FROM Intervention
+      DELETE FROM Interventions
       WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [deleteResult] = await connection.execute(deleteQuery);
-        logMessage(`${deleteResult.affectedRows} intervention(s) supprimées de la table principale`);
+        logMessage(`Archive : ${deleteResult.affectedRows} intervention(s) supprimées de la table principale`);
 
-        logMessage('Archivage terminé avec succès');
+        logMessage('Archive : Archivage terminé avec succès');
 
     } catch (error) {
-        logMessage(`Erreur lors de l’archivage : ${error.message}`);
+        logMessage(`Archive : Erreur lors de l’archivage : ${error.message}`);
     } finally {
         if (connection) {
             await connection.end();
-            logMessage('Connexion à la base fermée');
+            logMessage('Archive : Connexion à la base fermée');
         }
     }
 }

@@ -16,8 +16,10 @@ module.exports = (sequelize) => {
             commentaire: {
                 type: DataTypes.TEXT,
                 allowNull: true
-            }
-        },
+            },
+        }, {
+            tableName: 'historiqueintervention'
+        }
     );
 
     HistoriqueIntervention.associate = (models) => {
