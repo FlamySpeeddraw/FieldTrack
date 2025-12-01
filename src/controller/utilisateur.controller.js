@@ -1,4 +1,5 @@
 const db = require("../config/connexion");
+const bcryptjs = require("bcryptjs");
 const User = db.User;
 const Role = db.Role;
 
@@ -46,9 +47,8 @@ const createUtilisateur = async (req, res, next) => {
         const roleInstance = await Role.findOne({ where: { nom_role: role } });
         if (!roleInstance) return res.status(404).json({ message: "Rôle introuvable" });
 
-        console.log(roleInstance);
-
-        const newUtilisateur = await User.create({ mail, mdp, role_id: roleInstance.id });
+        const hashedPassword = bcryptjs.hashSync(rawPassword, 10);
+        const newUtilisateur = await User.create({ mail, mdp: hashedPassword, role_id: roleInstance.id });
         res.status(201).json({ message: "Utilisateur créé", data: newUtilisateur });
     } catch (e) { next(e); }
 };
