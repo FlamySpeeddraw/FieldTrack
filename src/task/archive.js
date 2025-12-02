@@ -34,21 +34,25 @@ const archiveOldInterventions = async () => {
         connection = await mysql.createConnection(dbConfig);
         logMessage('Archive : Connexion à la base réussie');
 
+        await connection.execute('SET FOREIGN_KEY_CHECKS = 0');
+
         const insertQuery = `
-      INSERT INTO HistoriqueIntervention (id_intervention, id_historique, commentaire, createdAt, updatedAt)
-      SELECT id, commentaire, NOW(), createdAt, updatedAt
-      FROM Interventions
+      INSERT INTO historiqueintervention (id_intervention, commentaire)
+      SELECT id_intervention, commentaire
+      FROM intervention
       WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [insertResult] = await connection.execute(insertQuery);
         logMessage(`Archive : ${insertResult.affectedRows} intervention(s) archivées`);
 
         const deleteQuery = `
-      DELETE FROM Interventions
+      DELETE FROM intervention
       WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [deleteResult] = await connection.execute(deleteQuery);
         logMessage(`Archive : ${deleteResult.affectedRows} intervention(s) supprimées de la table principale`);
+
+        await connection.execute('SET FOREIGN_KEY_CHECKS = 1');
 
         logMessage('Archive : Archivage terminé avec succès');
 
