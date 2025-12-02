@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const InterventionController = require("../controller/intervention.controller");
+const { verifyToken } = require("../middleware/token.middleware");
+router.use(verifyToken);
 
 /**
  * @swagger
