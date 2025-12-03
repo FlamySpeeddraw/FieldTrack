@@ -37,17 +37,17 @@ const archiveOldInterventions = async () => {
         await connection.execute('SET FOREIGN_KEY_CHECKS = 0');
 
         const insertQuery = `
-      INSERT INTO historiqueintervention (id_intervention, commentaire)
-      SELECT id, commentaire
+      INSERT INTO historiqueintervention (id_intervention, commentaire, createdAt, updatedAt)
+      SELECT id, commentaire, createdAt, updatedAt
       FROM interventions
-      WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
+      WHERE status = 'termine' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [insertResult] = await connection.execute(insertQuery);
         logMessage(`Archive : ${insertResult.affectedRows} intervention(s) archivées`);
 
         const deleteQuery = `
       DELETE FROM interventions
-      WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
+      WHERE status = 'termine' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [deleteResult] = await connection.execute(deleteQuery);
         logMessage(`Archive : ${deleteResult.affectedRows} intervention(s) supprimées de la table principale`);
