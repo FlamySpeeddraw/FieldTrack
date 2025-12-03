@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const utilisateurController = require("../controller/utilisateur.controller");
 const { verifyToken } = require("../middleware/token.middleware");
+const { appCheck } = require("../middleware/appCheck.middleware");
 router.use(verifyToken);
+router.use(appCheck("web"));
 
 /**
  * @swagger

@@ -38,15 +38,15 @@ const archiveOldInterventions = async () => {
 
         const insertQuery = `
       INSERT INTO historiqueintervention (id_intervention, commentaire)
-      SELECT id_intervention, commentaire
-      FROM intervention
+      SELECT id, commentaire
+      FROM interventions
       WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [insertResult] = await connection.execute(insertQuery);
         logMessage(`Archive : ${insertResult.affectedRows} intervention(s) archivées`);
 
         const deleteQuery = `
-      DELETE FROM intervention
+      DELETE FROM interventions
       WHERE status = 'finished' AND date_intervention < NOW() - INTERVAL 3 MONTH
     `;
         const [deleteResult] = await connection.execute(deleteQuery);

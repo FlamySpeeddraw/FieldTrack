@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const InterventionController = require("../controller/intervention.controller");
 const { verifyToken } = require("../middleware/token.middleware");
+const { appCheck } = require("../middleware/appCheck.middleware");
 router.use(verifyToken);
 
 /**
@@ -21,7 +22,7 @@ router.use(verifyToken);
  *       200:
  *         description: Liste des interventions
  */
-router.get("/",  InterventionController.getInterventions);
+router.get("/", InterventionController.getInterventions);
 
 /**
  * @swagger
@@ -109,7 +110,7 @@ router.get("/user/:id", InterventionController.getInterventionByUserId);
  *       201:
  *         description: Créée
  */
-router.post("/", InterventionController.postIntervention);
+router.post("/", appCheck("web"), InterventionController.postIntervention);
 
 /**
  * @swagger
@@ -151,6 +152,6 @@ router.put("/:id", InterventionController.updateIntervention);
  *     tags: [Interventions]
  *     summary: Supprime une intervention
  */
-router.delete("/:id", InterventionController.deleteIntervention);
+router.delete("/:id", appCheck("web"), InterventionController.deleteIntervention);
 
 module.exports = router;

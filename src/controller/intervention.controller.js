@@ -61,6 +61,7 @@ const postIntervention = async (req, res, next) => {
             commentaire: req.body.commentaire,
             photo: req.body.photo,
             adresse: req.body.adresse,
+            titre: req.body.titre,
         });
         res.status(201).json({ message: "Intervention ajoutée", data: newIntervention });
     } catch (e) { next(e); }
