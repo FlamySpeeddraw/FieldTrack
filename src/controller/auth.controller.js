@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
         const newRefreshToken = generateRefreshToken();
         const tokenHash = hashToken(newRefreshToken);
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_KEY);
+        const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES });
         const refreshToken = await Refresh.create({
             userId: user.id,
             tokenHash: tokenHash,
