@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const login = async (req, res, next) => {
     try {
-        const { mdp: rawPassword, mail } = req.body;
+        const { mdp: rawPassword, mail, appType } = req.body;
         if (!rawPassword || !mail) {
             return res.status(400).json({ code: 'BAD_REQUEST', message: 'Mail et mot de passe requis' });
         }
@@ -24,7 +24,7 @@ const login = async (req, res, next) => {
         const newRefreshToken = generateRefreshToken();
         const tokenHash = hashToken(newRefreshToken);
 
-        const token = jwt.sign({ id: user.id }, process.env.JWT_KEY);
+        const token = jwt.sign({ id: user.id, appType }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES });
         const refreshToken = await Refresh.create({
             userId: user.id,
             tokenHash: tokenHash,
@@ -64,7 +64,7 @@ const register = async (req, res, next) => {
 
 const refresh = async (req, res) => {
     try {
-        const { refreshToken } = req.body;
+        const { refreshToken, appType } = req.body;
         if (!refreshToken) {
             return res.status(401).json({ error: "Refresh token invalide" })
         }
@@ -81,7 +81,7 @@ const refresh = async (req, res) => {
 
         const newRefreshToken = generateRefreshToken();
         const tokenHash = hashToken(newRefreshToken);
-        const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES });
+        const token = jwt.sign({ id: user.id, appType }, process.env.JWT_KEY, { expiresIn: process.env.JWT_EXPIRES });
 
         const refresh = await Refresh.create({
             userId: user.id,
