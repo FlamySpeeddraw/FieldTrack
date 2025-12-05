@@ -36,7 +36,7 @@ const login = async (req, res, next) => {
             expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         });
 
-        res.status(200).json({ token, newRefreshToken });
+        res.status(200).json({ userId: user.id, token, newRefreshToken });
     } catch (error) {
         res.status(500).json({ message: 'Erreur interne' });
     }
