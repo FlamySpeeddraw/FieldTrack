@@ -42,26 +42,25 @@ const getInterventionByUserId = async (req, res, next) => {
     } catch (e) { next(e); }
 };
 
-/**
- * @todo bloquer si pas gestionnaire 
- */
 const postIntervention = async (req, res, next) => {
     try {
-        const utilisateur = await User.findByPk(req.body.id_utilisateur);
-
-        if (!utilisateur) {
-            return res.status(404).json({ message: "Utilisateur non existant" });
+        if (req.body.id_utilisateur) {
+            const utilisateur = await User.findByPk(req.body.id_utilisateur);
+            
+            if (!utilisateur) {
+                return res.status(404).json({ message: "Utilisateur non existant" });
+            }
         }
 
         const newIntervention = await Intervention.create({
+            titre: req.body.titre,
             date_intervention: req.body.date_intervention,
-            id_utilisateur: req.body.id_utilisateur,
+            id_utilisateur: req.body.id_utilisateur || null,
             status: req.body.status,
             description: req.body.description,
             commentaire: req.body.commentaire,
             photo: req.body.photo,
             adresse: req.body.adresse,
-            titre: req.body.titre,
         });
         res.status(201).json({ message: "Intervention ajoutée", data: newIntervention });
     } catch (e) { next(e); }
@@ -69,17 +68,44 @@ const postIntervention = async (req, res, next) => {
 
 const updateIntervention = async (req, res, next) => {
     try {
-        const allowedFields = ['status', 'commentaire', 'photo'];
+        const allowedFields = [
+            'titre', 
+            'description', 
+            'status', 
+            'date_intervention', 
+            'id_utilisateur', 
+            'commentaire', 
+            'photo', 
+            'adresse'
+        ];
+        
         const updateData = {};
         allowedFields.forEach(field => {
-            if (req.body[field] !== undefined) updateData[field] = req.body[field];
+            if (req.body[field] !== undefined) {
+                updateData[field] = req.body[field];
+            }
         });
+
+        if (updateData.id_utilisateur) {
+            const utilisateur = await User.findByPk(updateData.id_utilisateur);
+            if (!utilisateur) {
+                return res.status(404).json({ message: "Utilisateur assigné non existant" });
+            }
+        }
 
         const [updated] = await Intervention.update(updateData, {
             where: { id: req.params.id }
         });
 
-        res.status(200).json({ updated });
+        if (updated) {
+            const updatedIntervention = await Intervention.findByPk(req.params.id);
+            res.status(200).json({ 
+                message: "Intervention mise à jour", 
+                data: updatedIntervention 
+            });
+        } else {
+            res.status(404).json({ message: "Intervention non trouvée" });
+        }
     } catch (e) { next(e); }
 };
 
